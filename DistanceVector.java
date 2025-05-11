@@ -334,6 +334,7 @@ public class DistanceVector {
       flag = true;
       userInput = input.next();
     }
+    input.close();
     if (flag) {
       Map<String, Integer> routeToIndexUpdate = getNeighborToIndex(net);
       int lenUpdate = routeToIndexUpdate.size();
