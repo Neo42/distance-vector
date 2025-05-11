@@ -95,16 +95,62 @@ class DistanceList {
 }
 
 public class DistanceVector {
+  public static void getTables(int[][] neighborsCost, Neighbor[][] minCost, Map<String, Integer> routeToIndex,
+      Map<String, List<Neighbor>> map) {
+    Set<String> keys = routeToIndex.keySet();
+    for (String key : keys) {
+      minCost[routeToIndex.get(key)][routeToIndex.get(key)] = new Neighbor(key, 0);
+    }
+
+    for (Map.Entry<String, List<Neighbor>> entry : map.entrySet()) {
+      String node = entry.getKey();
+      List<Neighbor> neighbors = entry.getValue();
+      for (Neighbor neighbor : neighbors) {
+        neighborsCost[routeToIndex.get(node)][routeToIndex.get(neighbor.getNeighbor())] = neighbor.getCost();
+      }
+    }
+  }
+
+  public static Map<String, Integer> getNeighborToIndex(Graph net) {
+    Map<String, List<Neighbor>> map = net.getGraph();
+    List<String> sortedKeys = new ArrayList<>(map.keySet());
+    Collections.sort(sortedKeys);
+
+    Map<String, Integer> routeToIndex = new HashMap<>();
+    int index = 0;
+    for (String key : sortedKeys) {
+      routeToIndex.put(key, index);
+      index++;
+    }
+    return routeToIndex;
+  }
+
   public static void main(String[] args) {
-    Graph graph = new Graph();
-    graph.addNode("A");
-    graph.addNode("B");
-    graph.addNode("C");
-    graph.addEdge("A", "B", 1);
-    graph.addEdge("A", "C", 2);
-    graph.addEdge("B", "C", 3);
-    graph.addEdge("C", "A", 4);
-    graph.addEdge("C", "B", 5);
-    System.out.println(graph.getGraph());
+    Scanner input = new Scanner(System.in);
+    Graph net = new Graph();
+    String userInput = input.next();
+    while (!userInput.equals("DISTANCEVECTOR")) {
+      net.addNode(userInput);
+      userInput = input.next();
+    }
+    userInput = input.next();
+    while (!userInput.equals("UPDATE")) {
+      String firstNode = userInput;
+      String secondNode = input.next();
+      String weight = input.next();
+      int cost = Integer.parseInt(weight);
+      net.addEdge(firstNode, secondNode, cost);
+      userInput = input.next();
+    }
+    input.close();
+    Map<String, Integer> routeToIndex = getNeighborToIndex(net);
+    int len = routeToIndex.size();
+    DistanceList[][] distanceTable = new DistanceList[len][len];
+    Neighbor[][] minCost = new Neighbor[len][len];
+    int[][] neighborsCost = new int[len][len];
+    for (int i = 0; i < len; i++) {
+      Arrays.fill(neighborsCost[i], -1);
+    }
+    getTables(neighborsCost, minCost, routeToIndex, net.getGraph());
   }
 }
