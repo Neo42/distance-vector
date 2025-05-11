@@ -152,8 +152,8 @@ public class DistanceVector {
     }
   }
 
-  public static Map<String, Integer> getNeighborToIndex(Graph net) {
-    Map<String, List<Neighbor>> map = net.getGraph();
+  public static Map<String, Integer> getNeighborToIndex(Graph graph) {
+    Map<String, List<Neighbor>> map = graph.getGraph();
     List<String> sortedKeys = new ArrayList<>(map.keySet());
     Collections.sort(sortedKeys);
 
@@ -298,10 +298,10 @@ public class DistanceVector {
   public static void main(String[] args) {
     Scanner input = new Scanner(System.in);
 
-    Graph net = new Graph();
+    Graph graph = new Graph();
     String userInput = input.next();
     while (!userInput.equals("DISTANCEVECTOR")) {
-      net.addNode(userInput);
+      graph.addNode(userInput);
       userInput = input.next();
     }
     userInput = input.next();
@@ -310,10 +310,10 @@ public class DistanceVector {
       String secondNode = input.next();
       String weight = input.next();
       int cost = Integer.parseInt(weight);
-      net.addEdge(firstNode, secondNode, cost);
+      graph.addEdge(firstNode, secondNode, cost);
       userInput = input.next();
     }
-    Map<String, Integer> routeToIndex = getNeighborToIndex(net);
+    Map<String, Integer> routeToIndex = getNeighborToIndex(graph);
     int len = routeToIndex.size();
     DistanceList[][] distanceTable = new DistanceList[len][len];
     Neighbor[][] minCost = new Neighbor[len][len];
@@ -321,7 +321,7 @@ public class DistanceVector {
     for (int i = 0; i < len; i++) {
       Arrays.fill(neighborsCost[i], -1);
     }
-    getTables(neighborsCost, minCost, routeToIndex, net.getGraph());
+    getTables(neighborsCost, minCost, routeToIndex, graph.getGraph());
     executeDistanceVectorAlgorithm(neighborsCost, minCost, routeToIndex, distanceTable);
     boolean flag = false;
     userInput = input.next();
@@ -330,13 +330,13 @@ public class DistanceVector {
       String secondNode = input.next();
       String weight = input.next();
       int cost = Integer.parseInt(weight);
-      net.UpdateEdge(firstNode, secondNode, cost);
+      graph.UpdateEdge(firstNode, secondNode, cost);
       flag = true;
       userInput = input.next();
     }
     input.close();
     if (flag) {
-      Map<String, Integer> routeToIndexUpdate = getNeighborToIndex(net);
+      Map<String, Integer> routeToIndexUpdate = getNeighborToIndex(graph);
       int lenUpdate = routeToIndexUpdate.size();
       Neighbor[][] minCostUpdate = new Neighbor[lenUpdate][lenUpdate];
       DistanceList[][] distanceTableUpdate = new DistanceList[lenUpdate][lenUpdate];
@@ -344,7 +344,7 @@ public class DistanceVector {
       for (int i = 0; i < lenUpdate; i++) {
         Arrays.fill(neighborsCostUpdate[i], -1);
       }
-      getTables(neighborsCostUpdate, minCostUpdate, routeToIndexUpdate, net.getGraph());
+      getTables(neighborsCostUpdate, minCostUpdate, routeToIndexUpdate, graph.getGraph());
       mergeMinCost(minCost, routeToIndex, routeToIndexUpdate, minCostUpdate, distanceTable, distanceTableUpdate);
       executeDistanceVectorAlgorithm(neighborsCostUpdate, minCostUpdate, routeToIndexUpdate, distanceTableUpdate);
     }
