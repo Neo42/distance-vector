@@ -1,50 +1,99 @@
 import java.util.*;
 
+/**
+ * Represents a neighbor node with associated cost
+ */
 class Neighbor {
   private String neighbor;
   private int cost;
 
+  /**
+   * Constructor to create a Neighbor
+   * @param neighbor The ID/name of the neighbor node
+   * @param cost The cost/distance to reach this neighbor
+   */
   public Neighbor(String neighbor, int cost) {
     this.neighbor = neighbor;
     this.cost = cost;
   }
 
+  /**
+   * Gets the neighbor's ID
+   * @return The neighbor node's ID/name
+   */
   public String getNeighbor() {
     return neighbor;
   }
 
+  /**
+   * Sets the neighbor's ID
+   * @param neighbor The neighbor node's ID/name to set
+   */
   public void setNeighbor(String neighbor) {
     this.neighbor = neighbor;
   }
 
+  /**
+   * Gets the cost to this neighbor
+   * @return The cost/distance to the neighbor
+   */
   public int getCost() {
     return cost;
   }
 
+  /**
+   * Sets the cost to this neighbor
+   * @param cost The cost/distance to set
+   */
   public void setCost(int cost) {
     this.cost = cost;
   }
 }
 
+/**
+ * Represents the network topology as a graph
+ */
 class Graph {
   private Map<String, List<Neighbor>> graph;
 
+  /**
+   * Constructor to create an empty graph
+   */
   public Graph() {
     this.graph = new HashMap<>();
   }
 
+  /**
+   * Gets the graph representation
+   * @return Map containing nodes and their neighbors
+   */
   public Map<String, List<Neighbor>> getGraph() {
     return graph;
   }
 
+  /**
+   * Sets the graph representation
+   * @param graph Map containing nodes and their neighbors
+   */
   public void setGraph(Map<String, List<Neighbor>> graph) {
     this.graph = graph;
   }
 
+  /**
+   * Adds a new node to the graph
+   * @param node The ID/name of the node to add
+   */
   public void addNode(String node) {
     this.graph.put(node, new ArrayList<>());
   }
 
+  /**
+   * Adds a bidirectional edge between two nodes
+   * @param sourceNode The source node ID
+   * @param neighborNode The destination node ID
+   * @param weight The cost/distance between the nodes
+   * Special case: If weight is -1, updates the existing edge instead
+   */
   public void addEdge(String sourceNode, String neighborNode, int weight) {
     if (weight != -1) {
       this.graph.computeIfAbsent(sourceNode, k -> new ArrayList<>());
@@ -56,6 +105,12 @@ class Graph {
     }
   }
 
+  /**
+   * Updates an existing edge or removes it if weight is -1
+   * @param sourceNode The source node ID
+   * @param neighborNode The destination node ID
+   * @param weight The new cost/distance (-1 means remove edge)
+   */
   public void UpdateEdge(String sourceNode, String neighborNode, int weight) {
     if (weight == -1) {
       List<Neighbor> neighborsSource = this.graph.get(sourceNode);
@@ -78,17 +133,31 @@ class Graph {
   }
 }
 
+/**
+ * Stores distance information between nodes
+ */
 class DistanceList {
   private Map<String, String> distanceList;
 
+  /**
+   * Constructor to create an empty distance list
+   */
   public DistanceList() {
     this.distanceList = new HashMap<>();
   }
 
+  /**
+   * Gets the distance list
+   * @return Map containing distances to other nodes
+   */
   public Map<String, String> getDistanceList() {
     return distanceList;
   }
 
+  /**
+   * Sets the distance list
+   * @param distanceList Map containing distances to other nodes
+   */
   public void setDistanceList(Map<String, String> distanceList) {
     this.distanceList = distanceList;
   }
@@ -97,6 +166,11 @@ class DistanceList {
 public class DistanceVector {
   static int tick = 0;
 
+  /**
+   * Copies the contents of minCost into minCostRenew
+   * @param minCostRenew The destination array to copy to
+   * @param minCost The source array to copy from
+   */
   public static void cloneMinCost(Neighbor[][] minCostRenew, Neighbor[][] minCost) {
     int len = minCost.length;
     for (int i = 0; i < len; i++) {
@@ -106,6 +180,15 @@ public class DistanceVector {
     }
   }
 
+  /**
+   * Finds the minimum cost route from node to desKey
+   * @param distanceTable The table of distances
+   * @param node The source node
+   * @param desKey The destination node
+   * @param routeToIndex Mapping of node names to array indices
+   * @return Neighbor object with the next-hop node and minimal cost, or null if no path exists
+   * Special case: Returns null if all paths have infinite cost
+   */
   public static Neighbor getMin(DistanceList[][] distanceTable, String node, String desKey,
       Map<String, Integer> routeToIndex) {
     DistanceList mapTemp = distanceTable[routeToIndex.get(node)][routeToIndex.get(desKey)];
@@ -136,6 +219,13 @@ public class DistanceVector {
     }
   }
 
+  /**
+   * Initializes the cost tables with direct neighbor costs and self costs
+   * @param neighborsCost Array to store costs to direct neighbors
+   * @param minCost Array to store minimum costs to destinations
+   * @param routeToIndex Mapping of node names to array indices
+   * @param map The graph representation containing nodes and neighbors
+   */
   public static void getTables(int[][] neighborsCost, Neighbor[][] minCost, Map<String, Integer> routeToIndex,
       Map<String, List<Neighbor>> map) {
     Set<String> keys = routeToIndex.keySet();
@@ -152,6 +242,11 @@ public class DistanceVector {
     }
   }
 
+  /**
+   * Creates a mapping from node names to array indices
+   * @param graph The graph whose nodes need to be indexed
+   * @return Map from node names to indices
+   */
   public static Map<String, Integer> getNeighborToIndex(Graph graph) {
     Map<String, List<Neighbor>> map = graph.getGraph();
     List<String> sortedKeys = new ArrayList<>(map.keySet());
@@ -166,6 +261,11 @@ public class DistanceVector {
     return routeToIndex;
   }
 
+  /**
+   * Pads a string to the specified width with spaces
+   * @param text The text to pad
+   * @param width The width to pad to
+   */
   public static void padStringToWidth(String text, int width) {
     int len = text.length();
     System.out.print(text);
@@ -174,6 +274,12 @@ public class DistanceVector {
     }
   }
 
+  /**
+   * Prints the distance tables for all nodes
+   * @param keys Set of all node names in the network
+   * @param distanceTable Array containing distance information
+   * @param routeToIndex Mapping of node names to array indices
+   */
   public static void printDistanceTable(Set<String> keys, DistanceList[][] distanceTable,
       Map<String, Integer> routeToIndex) {
     for (String node : keys) {
@@ -203,6 +309,12 @@ public class DistanceVector {
     }
   }
 
+  /**
+   * Prints routing tables for all nodes
+   * @param keys Set of all node names in the network
+   * @param minCost Array containing the minimum cost paths
+   * @param routeToIndex Mapping of node names to array indices
+   */
   public static void printRoutingTable(Set<String> keys, Neighbor[][] minCost, Map<String, Integer> routeToIndex) {
     for (Map.Entry<String, Integer> entry : routeToIndex.entrySet()) {
       String node = entry.getKey();
@@ -220,6 +332,14 @@ public class DistanceVector {
     }
   }
 
+  /**
+   * The core algorithm that computes all shortest paths using distance vector approach
+   * @param neighborsCost Array of direct neighbor costs
+   * @param minCost Array to store minimum costs to destinations
+   * @param routeToIndex Mapping of node names to array indices
+   * @param distanceTable Array to store distance information
+   * Special case: Continues iterations until no changes are made to any distance values
+   */
   public static void executeDistanceVectorAlgorithm(int[][] neighborsCost, Neighbor[][] minCost,
       Map<String, Integer> routeToIndex,
       DistanceList[][] distanceTable) {
@@ -279,6 +399,15 @@ public class DistanceVector {
     printRoutingTable(keys, minCost, routeToIndex);
   }
 
+  /**
+   * Copies the existing cost and distance information to new arrays after an update
+   * @param minCost Source minimum cost array
+   * @param routeToIndex Source mapping of node names to indices
+   * @param routeToIndexUpdate Destination mapping of node names to indices
+   * @param minCostUpdate Destination minimum cost array
+   * @param distanceTable Source distance table
+   * @param distanceTableUpdate Destination distance table
+   */
   public static void mergeMinCost(Neighbor[][] minCost, Map<String, Integer> routeToIndex,
       Map<String, Integer> routeToIndexUpdate, Neighbor[][] minCostUpdate, DistanceList[][] distanceTable,
       DistanceList[][] distanceTableUpdate) {
@@ -295,6 +424,14 @@ public class DistanceVector {
 
   }
 
+  /**
+   * Main method that processes input, builds the network, and executes the algorithm
+   * @param args Command line arguments (not used)
+   * Input format:
+   * 1. Node names followed by "DISTANCEVECTOR"
+   * 2. Edge definitions (node1 node2 weight) followed by "UPDATE"
+   * 3. Optional edge updates followed by "END"
+   */
   public static void main(String[] args) {
     Scanner input = new Scanner(System.in);
 
