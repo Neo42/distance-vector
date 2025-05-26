@@ -283,7 +283,7 @@ public class DistanceVector {
   public static void printDistanceTable(Set<String> keys, DistanceList[][] distanceTable,
       Map<String, Integer> routeToIndex) {
     for (String node : keys) {
-      System.out.println(node + " Distance Table at t=" + tick);
+      System.out.println("Distance Table of router " + node + " at t=" + tick + ":");
       // first row title
       padStringToWidth(" ", 5);
       for (String key : keys) {
@@ -319,7 +319,7 @@ public class DistanceVector {
     for (Map.Entry<String, Integer> entry : routeToIndex.entrySet()) {
       String node = entry.getKey();
       int index = entry.getValue();
-      System.out.println(node + " Routing Table:");
+      System.out.println("Routing Table of router " + node + ":");
       for (String key : keys) {
         if (!key.equals(node)) {
           Neighbor viaObj = minCost[index][routeToIndex.get(key)];
