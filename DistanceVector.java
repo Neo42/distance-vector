@@ -437,7 +437,7 @@ public class DistanceVector {
 
     Graph graph = new Graph();
     String userInput = input.next();
-    while (!userInput.equals("DISTANCEVECTOR")) {
+    while (!userInput.equals("START")) {
       graph.addNode(userInput);
       userInput = input.next();
     }
